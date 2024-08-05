@@ -1,20 +1,173 @@
 
+import java.util.Scanner;
 
 public class game{
 
     public static int[][] board;
 
+    public static int checkWinner(int[][] board){
+
+        int value = 0;
+        int count;
+
+        for(int y = 0;y <= 2;y++){
+            count = 0;
+            for(int x = 0;x <= 2;x++){
+                value = board[y][x];
+                if(value == 0){
+                    continue;
+                }
+                for(int i = 0;i <= 2;i++){
+                    if(board[y][i] != value){
+                        break;
+                    }
+                    count++;
+                }
+                if(count == 3){
+                    return value;
+                }
+                count = 0;
+                for(int i = 0;i <= 2;i++){
+                    if(board[i][x] != value){
+                        break;
+                    }
+                    count++;
+                }
+                if(count == 3){
+                    return value;
+                }
+                count = 0;
+
+            }
+
+        }
+
+        value = board[1][1];
+        if(value != 0 && board[0][0] == value && board[1][1] == value && board[2][2] == value){
+            return value;
+        }
+
+        if(value != 0 && board[0][2] == value && board[1][1] == value && board[2][0] == value){
+            return value;
+        }
+
+
+        return 0;
+    }
+
+    public static void drawBoard(int[][] board){
+
+        // 0 represents empty cell
+        // 1 represents player cell (o)
+        // -1 represents bot cell (x)
+        System.out.println("* * * * * * * * * * * * * ");
+        for(int y = 0; y <= 2;y++){
+
+            
+            for(int x = 0; x <= 2;x++){ // first line
+                System.err.print("* ");
+                if(board[y][x] == 0){
+                    System.out.print("      ");
+                }else if(board[y][x] == 1){
+                    System.out.print("  o   ");
+                }else{
+                    System.out.print("xxxxxx");
+                    // System.out.print("o   o ");
+                }
+            }
+            System.err.println("* ");
+            for(int x = 0; x <= 2;x++){ // second line
+                System.err.print("* ");
+                if(board[y][x] == 0){
+                    System.out.print("      ");
+                }else if(board[y][x] == 1){
+                    System.out.print("o   o ");
+                }else{
+                    System.out.print("xxxxxx");
+                    // System.out.print("  o   ");
+                }
+            }
+            System.err.println("* ");
+            for(int x = 0; x <= 2;x++){ // third line
+                System.err.print("* ");
+                if(board[y][x] == 0){
+                    System.out.print("      ");
+                }else if(board[y][x] == 1){
+                    System.out.print("  o   ");
+                }else{
+                    System.out.print("xxxxxx");
+                    // System.out.print("o   o ");
+                }
+            }
+            System.err.println("* ");
+            System.out.println("* * * * * * * * * * * * * ");
+            
+        }
+    }
+
     
+    public static void gameRun(xobot bot,int[][] board){
+        Scanner inputScanner = new Scanner(System.in);
+        int input;
+        int botMove;
+        int winner;
+        while(true){
+
+            drawBoard(board);
+            System.out.println("");
+            System.out.println("* * * * * * *");
+            System.out.println("* 1 * 2 * 3 *");
+            System.out.println("* * * * * * *");
+            System.out.println("* 4 * 5 * 6 *");
+            System.out.println("* * * * * * *");
+            System.out.println("* 7 * 8 * 9 *");
+            System.out.println("* * * * * * *\n");
+            System.out.println("Please enter the desire location to place your O\n");
+            System.out.print("Your input : ");
+            input = inputScanner.nextInt() - 1;
+            System.out.print("\n\n");
+
+            board[input / 3][input % 3] = 1;
+
+            // player's turn ends
+
+            //check if player wins
+
+            winner = checkWinner(board);
+            if(winner != 0){
+                System.out.print("\n\nwinner is found!\n\n");
+                drawBoard(board);
+                break;
+            }
+            
+            // bot's turn starts
+
+            bot.observeBoard(board);
+            botMove = bot.calculateNextMove();
+            if(botMove != -1){
+                board[botMove / 3][botMove % 3] = -1;
+            }
+
+            //check if bot wins
+            winner = checkWinner(board);
+            if(winner != 0){
+                System.out.print("\n\nwinner is found!\n\n");
+                drawBoard(board);
+                break;
+            }
+
+        }
+
+        // player first then bot's turn
+
+        
+
+    }
 
     public static void main(String[] args){
-
-        System.out.println("test");
-
-
-
-
-
-
+        int[][] board = new int[3][3];
+        xobot bot = new xobot(1);
+        gameRun(bot,board);
     }
 
 }
