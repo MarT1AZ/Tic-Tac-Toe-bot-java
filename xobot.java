@@ -15,6 +15,10 @@ public class xobot {
         this.state = state;
     }
 
+    public void calculateNextMove(){
+        
+    }
+
 
 
 
