@@ -7,6 +7,11 @@ public class game{
 
     public static int checkWinner(int[][] board){
 
+        // return value as 
+        // 1 -> player wins
+        // 0 -> no one has won yet
+        // -1 bot wins
+
         int value = 0;
         int count;
 
@@ -69,10 +74,10 @@ public class game{
                 if(board[y][x] == 0){
                     System.out.print("      ");
                 }else if(board[y][x] == 1){
-                    System.out.print("  o   ");
+                    System.out.print("/ --\\ ");
                 }else{
-                    System.out.print("xxxxxx");
-                    // System.out.print("o   o ");
+                    // System.out.print("xxxxxx");
+                    System.out.print("\\   / ");
                 }
             }
             System.err.println("* ");
@@ -81,10 +86,10 @@ public class game{
                 if(board[y][x] == 0){
                     System.out.print("      ");
                 }else if(board[y][x] == 1){
-                    System.out.print("o   o ");
+                    System.out.print("|   | ");
                 }else{
-                    System.out.print("xxxxxx");
-                    // System.out.print("  o   ");
+                    // System.out.print("xxxxxx");
+                    System.out.print("  |   ");
                 }
             }
             System.err.println("* ");
@@ -93,10 +98,10 @@ public class game{
                 if(board[y][x] == 0){
                     System.out.print("      ");
                 }else if(board[y][x] == 1){
-                    System.out.print("  o   ");
+                    System.out.print("\\ --/ ");
                 }else{
-                    System.out.print("xxxxxx");
-                    // System.out.print("o   o ");
+                    // System.out.print("xxxxxx");
+                    System.out.print("/   \\ ");
                 }
             }
             System.err.println("* ");
@@ -127,12 +132,17 @@ public class game{
             input = inputScanner.nextInt() - 1;
             System.out.print("\n\n");
 
-            board[input / 3][input % 3] = 1;
+            while(!(0 <= input && input <= 8 && board[input / 3][input % 3] == 0)){
+                System.out.println("Invalid position!\n");
+                System.out.print("please choose again : ");
+                input = inputScanner.nextInt() - 1;
+                System.out.print("\n\n");
+            }
 
+            board[input / 3][input % 3] = 1;
             // player's turn ends
 
             //check if player wins
-
             winner = checkWinner(board);
             if(winner != 0){
                 System.out.print("\n\nwinner is found!\n\n");
@@ -140,8 +150,7 @@ public class game{
                 break;
             }
             
-            // bot's turn starts
-
+            // bot's turn starts if player has not won
             bot.observeBoard(board);
             botMove = bot.calculateNextMove();
             if(botMove != -1){
