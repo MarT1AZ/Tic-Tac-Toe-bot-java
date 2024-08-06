@@ -170,7 +170,11 @@ public class game{
             //check if player wins
             winner = checkWinner(board);
             if(winner != 0){
-                System.out.print("\n\nwinner is found!\n\n");
+                System.out.print("\n\nplayer has won!\n\n");
+                drawBoard(board);
+                break;
+            }else if(checkIfBoardFull(board)){
+                System.out.print("\nDRAW!\n\n");
                 drawBoard(board);
                 break;
             }
@@ -185,7 +189,11 @@ public class game{
             //check if bot wins
             winner = checkWinner(board);
             if(winner != 0){
-                System.out.print("\n\nwinner is found!\n\n");
+                System.out.print("\n\nbot has won!\n\n");
+                drawBoard(board);
+                break;
+            }else if(checkIfBoardFull(board)){
+                System.out.print("\nDRAW!\n\n");
                 drawBoard(board);
                 break;
             }
@@ -193,7 +201,7 @@ public class game{
         }
 
         // player first then bot's turn
-
+        inputScanner.close();
         
 
     }

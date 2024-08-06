@@ -21,13 +21,51 @@ public class xobot {
     }
 
     public int advanceCalculateNextMove(){
-        int[] result = minimax(boardState,true);
+        int[] result = minimax(boardState,true,0);
         return result[0];
     }
 
-    public int[] minimax(int[][] boardState,boolean isBotTurn){
-        // the first call is alway true
+    public boolean checkIfCellShouldBeBlocked(int[][] boardState,int cellNumber){
+        int cellX,cellY;
+        // translate cellNumber into cellX,cellY
+        cellX = cellNumber/3;
+        cellY = cellNumber % 3;
 
+        int weight = 0;
+        int finalWeight = 0;
+        for(int i = 0; i <= 2;i++){
+            weight += boardState[i][cellX];
+        }
+        finalWeight = weight;
+        weight = 0;
+        
+        for(int i = 0; i <= 2;i++){
+            weight += boardState[cellY][i];
+        }
+        finalWeight = weight > finalWeight?weight:finalWeight;
+        weight = 0;
+
+        if(cellX == cellY){
+            weight = boardState[0][0] + boardState[1][1] + boardState[2][2];
+            finalWeight = weight > finalWeight?weight:finalWeight;
+            weight = 0;
+        }
+
+
+        if((cellX == 0 && cellY == 2) || (cellX == 1 && cellY == 1) || (cellX == 2 && cellY == 0)){
+            weight = boardState[0][2] + boardState[1][1] + boardState[2][0];
+            finalWeight = weight > finalWeight?weight:finalWeight;
+            weight = 0;
+        }
+
+        // cell
+        ////////////////////////////////////////////////////////////
+        return finalWeight == 2;
+    }
+
+    public int[] minimax(int[][] boardState,boolean isBotTurn,int depth){
+        // the first call is alway true
+        
         //find empty position
         ArrayList<Integer> emptyPositions = new ArrayList<Integer>();
         
@@ -44,15 +82,118 @@ public class xobot {
 
 
         int winner = 0;
-        int numberOfCellLeft = game.numberOfEmptyCell(boardState);
         int[] moveAndFinalScore = new int[2];
 
         ArrayList<Integer> nextMoves = new ArrayList<Integer>();
-        ArrayList<Integer> score = new ArrayList<Integer>();
+        ArrayList<Integer> scores = new ArrayList<Integer>();
+
+
         for(int ep : emptyPositions){
 
+            for(int y = 0;y <= 2;y++){ // reset simulatedstate as boardstate
+                for(int x = 0;x <= 2;x++){
+                    simulatedBoardState[y][x] = boardState[y][x];
+                }
+            }
+
+            simulatedBoardState[ep / 3][ep % 3] = isBotTurn? -1 : 1;
+
+            winner = game.checkWinner(simulatedBoardState);
+
+            if(winner == -1){
+                nextMoves.add(ep);
+                scores.add(10 - depth);
+            }else if(winner == 1){
+                nextMoves.add(ep);
+                scores.add(depth - 10);
+            }else if(emptyPositions.size() > 1){
+                moveAndFinalScore = minimax(simulatedBoardState, !isBotTurn, depth + 1);
+                nextMoves.add(ep);
+                scores.add(moveAndFinalScore[1]);
+            }else{
+                nextMoves.add(ep);
+                scores.add(0);
+            }
 
         }
+
+        // if(depth == 0){ //////////////////// FOR DEBUGING
+
+        //     for(int i = 0;i < nextMoves.size();i++){
+        //         System.out.print(nextMoves.get(i) + " ");
+        //     }
+        //     System.out.print("\n\n");
+        //     for(int i = 0;i < scores.size();i++){
+        //         System.out.print(scores.get(i) + " ");
+        //     }
+        //     System.out.print("\n\n");
+        // } //////////////////// FOR DEBUGING
+
+        for(int i = 0;i < nextMoves.size() - 1;i++){
+            for(int j = 0,tmp;j < nextMoves.size() - 1 - i;j++){
+                if((scores.get(j) > scores.get(j + 1) && !isBotTurn) || (scores.get(j) < scores.get(j + 1) && isBotTurn)){
+                    tmp = scores.get(j);
+                    scores.set(j,scores.get(j + 1));
+                    scores.set(j + 1,tmp);
+                    tmp = nextMoves.get(j);
+                    nextMoves.set(j,nextMoves.get(j + 1));
+                    nextMoves.set(j + 1,tmp);
+                }
+            }
+        }
+
+        int idealScore = scores.get(0);
+        int potentialMovesCount = nextMoves.size();
+        for(int i = 0;i < nextMoves.size();i++){
+            if(idealScore != scores.get(i)){
+                potentialMovesCount = i;
+                break;
+            }
+        }
+
+        
+
+        int finalIndex = -1;
+        // if(potentialMovesCount > 1){
+        //     // check if anywhere should be block //////////////////////////////////////////////////////////////
+        //     for(int i = 0; i < potentialMovesCount;i++){
+        //         if(checkIfCellShouldBeBlocked(boardState, nextMoves.get(i))){
+        //             moveAndFinalScore[0] = nextMoves.get(i);
+        //             moveAndFinalScore[1] = scores.get(i);
+        //             finalIndex = i;
+        //             if(depth == 0){
+        //                 System.out.println("BLOCK!");
+        //             }
+        //             break;
+        //         }
+        //     }
+
+        // }
+        
+        if(finalIndex == -1){
+            //if no cell should be block to stop the player from wining,  randomized
+            finalIndex = randomizer.nextInt(potentialMovesCount);
+        }
+        moveAndFinalScore[0] = nextMoves.get(finalIndex);
+        moveAndFinalScore[1] = scores.get(finalIndex);
+
+        if(depth == 0){ //////////////////// FOR DEBUGING
+
+            System.out.println("choices " + potentialMovesCount + " value " + idealScore + "\n");
+            System.out.println(moveAndFinalScore[0] + "\n");
+            System.out.println(moveAndFinalScore[1] + "\n");
+
+            for(int i = 0;i < nextMoves.size();i++){
+                System.out.print(nextMoves.get(i) + " ");
+            }
+            System.out.print("\n\n");
+            for(int i = 0;i < scores.size();i++){
+                System.out.print(scores.get(i) + " ");
+            }
+            System.out.print("\n\n");
+        } //////////////////// FOR DEBUGING
+
+        return moveAndFinalScore;
 
 
 
