@@ -5,7 +5,32 @@ public class game{
 
     public static int[][] board;
 
-    public static int checkWinner(int[][] board){
+    public static boolean checkIfBoardFull(int[][] board){
+        for(int y = 0; y <= 2;y++){
+            for(int x = 0; x <= 2;x++){
+                if(board[y][x] == 0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static int numberOfEmptyCell(int[][] board){
+
+        int count = 0;
+        for(int y = 0; y <= 2;y++){
+            for(int x = 0; x <= 2;x++){
+                if(board[y][x] == 0){
+                    count++;
+                }
+            }
+        }
+        return count;
+
+    }
+
+    public static int checkWinner(int[][] board){ // this method is also used in xobot for finding out who is the winner
 
         // return value as 
         // 1 -> player wins
@@ -152,7 +177,7 @@ public class game{
             
             // bot's turn starts if player has not won
             bot.observeBoard(board);
-            botMove = bot.calculateNextMove();
+            botMove = bot.advanceCalculateNextMove();
             if(botMove != -1){
                 board[botMove / 3][botMove % 3] = -1;
             }

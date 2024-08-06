@@ -15,13 +15,48 @@ public class xobot {
         this.randomizer = new Random();
     }
 
-
-
     public void observeBoard(int[][] board){
         // recieve board as state
         this.boardState = board;
     }
 
+    public int advanceCalculateNextMove(){
+        int[] result = minimax(boardState,true);
+        return result[0];
+    }
+
+    public int[] minimax(int[][] boardState,boolean isBotTurn){
+        // the first call is alway true
+
+        //find empty position
+        ArrayList<Integer> emptyPositions = new ArrayList<Integer>();
+        
+        for(int y = 0;y <= 2;y++){
+            for(int x = 0; x <= 2;x++){
+                if(boardState[y][x] == 0){
+                    emptyPositions.add(3 * y + x);
+                }
+            }
+        }
+
+        int[][] simulatedBoardState = new int[3][3];
+
+
+
+        int winner = 0;
+        int numberOfCellLeft = game.numberOfEmptyCell(boardState);
+        int[] moveAndFinalScore = new int[2];
+
+        ArrayList<Integer> nextMoves = new ArrayList<Integer>();
+        ArrayList<Integer> score = new ArrayList<Integer>();
+        for(int ep : emptyPositions){
+
+
+        }
+
+
+
+    }
 
     public int calculateNextMove(){
 
